@@ -1,19 +1,103 @@
+//by default, Next.js components are server components, which means they are rendered on the server and sent to the client as HTML. 
+//tells Next.js to run this component in the user's browser, useState(), useEffect() and onChange() only work in client components, not server components. 
+//This is because they rely on the browser's DOM and user interactions, which are not available on the server side.
+'use client'
+
+//importing functions from react and other libraries to use in this component
+import { useState, useEffect } from 'react' //react is not a file/folder in the project directory, it is a dependency installed in the node_modules folder.
+import { searchBrands } from '../lib/search'
+
+//imports your databse connection
 import { supabase } from '../lib/supabase'
 
-export default async function Home() {
-  const { data, error } = await supabase.from('categories').select('*')
+//creating a React component called Home, which is the default export of this file. This component will be rendered on the client side.
+//since its the only export in this file, Next.js automatically treats it as the homepage of the app. 
+export default function Home() {
+  //useState creates variables whose value can change while the app is running
+  //these are not arrays, but rather 2 variables that hold a single value.
+  //The first value is the current state, and the second value is a function that can be used to update the state.
+  const [categories, setCategories] = useState([])
+  const [query, setQuery] = useState('') //value of the query is set inside the HTML below.
+  const [results, setResults] = useState([])
+  const [loading, setLoading] = useState(false)
 
+  //this fills categories variable with data from database. 
+  useEffect(() => {
+    async function loadCategories() {
+      const { data } = await supabase
+        .from('categories')
+        .select('*')
+        .order('category_name')
+      setCategories(data || [])
+    }
+    loadCategories()
+  }, [])
+
+  useEffect(() => {
+    //if query is empty
+    if (query.trim() === '') {
+      setResults([])
+      return
+    }
+
+    setLoading(true)
+    //debouncing
+    const timeout = setTimeout(async () => {
+      const data = await searchBrands(query)
+      setResults(data)
+      setLoading(false) //database search is complete. 
+    }, 300) //wait 300 milliseconds so user can type before searching tje database
+
+    return () => clearTimeout(timeout) //ensure only the newest search results return if user retypes
+  }, [query]) //everytime the query changes, this effect runs again
+
+  //everything below determines what the user sees
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Supabase connection test</h1>
-      {error && <p>Error: {error.message}</p>}
-      {data && (
-        <ul>
-          {data.map((cat) => (
-            <li key={cat.id}>{cat.category_name}</li>
-          ))}
-        </ul>
+    /* this creates the search box */
+    <main style={{ padding: '2rem', maxWidth: '640px', margin: '0 auto' }}>
+      <h1>Discount Trackr</h1>
+
+      <input
+        type="text"
+        placeholder="Search for a product, e.g. laptop"
+        value={query} 
+        /*e is an event object - run this code whenever the value inside the input box changes, target refers to the HTML element that triggered the event*/
+        /*eg. e.target.value = "lap", then setQuery("lap")*/
+        onChange={(e) => setQuery(e.target.value)}
+        style={{ width: '100%', padding: '0.75rem', fontSize: '1rem' }}
+      />
+
+      {/*if loading is true, then return <p>Searching...</p>*/}
+      {loading && <p>Searching...</p>}
+
+      {query.trim() !== '' && !loading && (
+        <div>
+          {results.length === 0 ? (
+            <p>No brands found for "{query}"</p>
+          ) : (
+            results.map((brand) => (
+              <div
+                key={brand.id}
+                style={{ border: '1px solid #444', padding: '1rem', margin: '0.5rem 0' }}
+              >
+                <h3>{brand.brand_name}</h3>
+                <p>{brand.discount_amount}</p>
+              </div>
+            ))
+          )}
+        </div>
       )}
-    </div>
+      {/*if nothing has been typed by user, display all categories*/}
+      {query.trim() === '' && (
+        <div>
+          <h2>Browse by category</h2>
+          <ul>
+            {categories.map((cat) => (
+              <li key={cat.id}>{cat.category_name}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </main>
   )
 }
