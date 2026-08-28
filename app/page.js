@@ -6,6 +6,7 @@
 //importing functions from react and other libraries to use in this component
 import { useState, useEffect } from 'react' //react is not a file/folder in the project directory, it is a dependency installed in the node_modules folder.
 import { searchBrands } from '../lib/search'
+import BrandCard from '../components/BrandCard' //importing BrandCard which displays a brand's name and its details.
 
 //imports your databse connection
 import { supabase } from '../lib/supabase'
@@ -76,13 +77,8 @@ export default function Home() {
             <p>No brands found for "{query}"</p>
           ) : (
             results.map((brand) => (
-              <div
-                key={brand.id}
-                style={{ border: '1px solid #444', padding: '1rem', margin: '0.5rem 0' }}
-              >
-                <h3>{brand.brand_name}</h3>
-                <p>{brand.discount_amount}</p>
-              </div>
+              <BrandCard key={brand.id} brand={brand} /> //using the BrandCard component to display each brand in the results array. 
+              //The key prop is used by React to keep track of which items have changed, been added, or removed.
             ))
           )}
         </div>

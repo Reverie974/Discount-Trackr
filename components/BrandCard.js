@@ -20,10 +20,13 @@ export default function BrandCard({ brand }) {
         </p>
       )}
 
+      <a
         href={brand.redeem_link}
-        {/* target="_blank" + rel="noopener noreferrer" opens the link in a new tab */}
+        /* target="_blank" + rel="noopener noreferrer" opens the link in a new tab */
         target="_blank"
+        /* rel="noopener noreferrer" prevents tabnabbing attacks */
         rel="noopener noreferrer"
+  
         style={{
           display: 'inline-block',
           padding: '0.5rem 1rem',
@@ -32,7 +35,7 @@ export default function BrandCard({ brand }) {
           textDecoration: 'none',
           borderRadius: '4px',
         }}
-      <a>
+      >
         Get Discount →
       </a>
     </div>
