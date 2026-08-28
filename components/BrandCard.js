@@ -1,4 +1,5 @@
 export default function BrandCard({ brand }) {
+  //brand is an object with the following properties: brand_name, discount_amount, description, redeem_link
   return (
     <div
       style={{

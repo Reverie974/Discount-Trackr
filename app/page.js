@@ -79,6 +79,9 @@ export default function Home() {
             results.map((brand) => (
               <BrandCard key={brand.id} brand={brand} /> //using the BrandCard component to display each brand in the results array. 
               //The key prop is used by React to keep track of which items have changed, been added, or removed.
+              //each element (brand) in the results array is an object (think of it as a JSON object) that contains the brand's details, which are passed to the BrandCard component as a prop.
+              //in brand={brand}, brand on the right is an object from the results array, and brand on the left is the name of the prop passed to BrandCard function/component to access the brand's details.
+              //name of the prop should match the name of the parameter in the BrandCard function/component, which is also called brand.
             ))
           )}
         </div>
