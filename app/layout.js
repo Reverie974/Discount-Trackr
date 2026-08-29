@@ -1,3 +1,5 @@
+//notice how there is no 'use client' here because 
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 

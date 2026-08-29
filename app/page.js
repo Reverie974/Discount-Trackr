@@ -6,7 +6,9 @@
 //importing functions from react and other libraries to use in this component
 import { useState, useEffect } from 'react' //react is not a file/folder in the project directory, it is a dependency installed in the node_modules folder.
 import { searchBrands } from '../lib/search'
+import { getBrandsByCategory } from '../lib/categories'
 import BrandCard from '../components/BrandCard' //importing BrandCard which displays a brand's name and its details.
+import CategoryChips from '../components/CategoryChips'
 
 //imports your databse connection
 import { supabase } from '../lib/supabase'
@@ -20,7 +22,12 @@ export default function Home() {
   const [categories, setCategories] = useState([])
   const [query, setQuery] = useState('') //value of the query is set inside the HTML below.
   const [results, setResults] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false) //useState sets the initial state of loading - which is to false. 
+
+  // category browsing state - new
+  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [categoryBrands, setCategoryBrands] = useState([])
+  const [categoryLoading, setCategoryLoading] = useState(false)
 
   //this fills categories variable with data from database. 
   useEffect(() => {
@@ -52,6 +59,19 @@ export default function Home() {
     return () => clearTimeout(timeout) //ensure only the newest search results return if user retypes
   }, [query]) //everytime the query changes, this effect runs again
 
+  // load brands whenever the selected category changes - new
+  useEffect(() => {
+    async function loadCategoryBrands() {
+      setCategoryLoading(true)
+      const data = await getBrandsByCategory(selectedCategory)
+      setCategoryBrands(data)
+      setCategoryLoading(false)
+    }
+    loadCategoryBrands()
+  }, [selectedCategory])
+
+  const isSearching = query.trim() !== '' //new
+
   //everything below determines what the user sees
   return (
     /* this creates the search box */
@@ -68,33 +88,50 @@ export default function Home() {
         style={{ width: '100%', padding: '0.75rem', fontSize: '1rem' }}
       />
 
-      {/*if loading is true, then return <p>Searching...</p>*/}
-      {loading && <p>Searching...</p>}
+      {/* everything below here is new, double check*/}
 
-      {query.trim() !== '' && !loading && (
+            {isSearching ? (
+        // ----- SEARCH MODE -----
         <div>
-          {results.length === 0 ? (
-            <p>No brands found for "{query}"</p>
-          ) : (
-            results.map((brand) => (
-              <BrandCard key={brand.id} brand={brand} /> //using the BrandCard component to display each brand in the results array. 
-              //The key prop is used by React to keep track of which items have changed, been added, or removed.
-              //each element (brand) in the results array is an object (think of it as a JSON object) that contains the brand's details, which are passed to the BrandCard component as a prop.
-              //in brand={brand}, brand on the right is an object from the results array, and brand on the left is the name of the prop passed to BrandCard function/component to access the brand's details.
-              //name of the prop should match the name of the parameter in the BrandCard function/component, which is also called brand.
-            ))
+          {loading && <p>Searching...</p>}
+          {!loading && (
+            results.length === 0 ? (
+              <p>No brands found for "{query}"</p>
+            ) : (
+              <div>
+                <h2>Search Results</h2>
+                {results.map((brand) => (
+                  <BrandCard key={brand.id} brand={brand} />
+                ))}
+              </div>
+            )
           )}
         </div>
-      )}
-      {/*if nothing has been typed by user, display all categories*/}
-      {query.trim() === '' && (
+      ) : (
+        // ----- CATEGORY BROWSING MODE (default) -----
         <div>
           <h2>Browse by category</h2>
-          <ul>
-            {categories.map((cat) => (
-              <li key={cat.id}>{cat.category_name}</li>
-            ))}
-          </ul>
+
+          <CategoryChips
+            categories={categories}
+            selectedCategory={selectedCategory}
+            onSelect={setSelectedCategory}
+          />
+
+          {categoryLoading && <p>Loading...</p>}
+
+          {!categoryLoading && (
+            categoryBrands.length === 0 ? (
+              <p>No brands found in this category yet.</p>
+            ) : (
+              <div>
+                <h3>{selectedCategory === 'all' ? 'All Brands' : selectedCategory}</h3>
+                {categoryBrands.map((brand) => (
+                  <BrandCard key={brand.id} brand={brand} />
+                ))}
+              </div>
+            )
+          )}
         </div>
       )}
     </main>
