@@ -5,10 +5,24 @@ The application uses Next.js for the frontend and Supabase for backend services 
 
 Users can search for specific products, such as laptops, to discover relevant brands offering discounts. Each brand listing includes a link to the relevant page where users can access or redeem the offer.
 
+Features:
+* Search for brands by product
+* Browse brands by category
+* View brand listings and follow links to offers
+  
+Tech Stack:
+* Frontend: Next.js
+* Backend and database services: Supabase
+* Database: PostgreSQL
+
+Future Improvements:
+* Expand the database to include more brands and discounts
+* Enable users to click on brand cards to view more details
+* Explore personalised brand recommendations
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
-
 First, run the development server:
 
 ```bash
@@ -23,21 +37,11 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Project Status
 
-To learn more about Next.js, take a look at the following resources:
+This project is a work in progress. The core search and category-browsing functionality is implemented, with further improvements planned.
+A picture of the web app is also included:
+<img width="1600" height="1325" alt="image" src="https://github.com/user-attachments/assets/c27c7eb7-227d-4970-978f-42e4f2c76181" />
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
